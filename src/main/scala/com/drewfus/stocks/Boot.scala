@@ -1,4 +1,4 @@
-package com.example
+package com.drewfus.stocks
 
 import akka.actor.{ActorSystem, Props}
 import akka.io.IO
@@ -13,7 +13,9 @@ object Boot extends App {
   implicit val system = ActorSystem("on-spray-can")
 
   // create and start our service actor
-  val service = system.actorOf(Props[MyServiceActor], "demo-service")
+  val service = system.actorOf(Props[BiggestMoversActor], "biggest-movers-service")
+
+//  val snp500Updater = system.actorOf(SNP500ConstituentsActor.props(service), "snp500-updater")
 
   implicit val timeout = Timeout(5.seconds)
   // start a new HTTP server on port 8080 with our service actor as the handler

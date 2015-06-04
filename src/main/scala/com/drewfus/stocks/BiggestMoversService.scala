@@ -1,13 +1,15 @@
-package com.example
+package com.drewfus.stocks
 
-import akka.actor.Actor
+import akka.actor.{ActorLogging, Actor}
 import spray.routing._
 import spray.http._
 import MediaTypes._
 
+import scala.xml.NodeSeq
+
 // we don't implement our route structure directly in the service actor because
 // we want to be able to test it independently, without having to spin up an actor
-class MyServiceActor extends Actor with MyService {
+class BiggestMoversActor extends Actor with BiggestMoversService with ActorLogging {
 
   // the HttpService trait defines only one abstract member, which
   // connects the services environment to the enclosing actor or test
@@ -17,23 +19,23 @@ class MyServiceActor extends Actor with MyService {
   // other things here, like request stream processing
   // or timeout handling
   def receive = runRoute(myRoute)
+/*  {
+    case c :SNP500Constituents => {
+      log.info("SNP500 constituents updated")
+      snpconstituents = c
+    }
+    case _ =>
+  } */
 }
 
-
 // this trait defines our service behavior independently from the service actor
-trait MyService extends HttpService {
+trait BiggestMoversService extends HttpService {
 
   val myRoute =
-    path("") {
+    path("movers") {
       get {
         respondWithMediaType(`text/html`) { // XML is marshalled to `text/xml` by default, so we simply override here
-          complete {
-            <html>
-              <body>
-                <h1>Say hello to <i>spray-routing</i> on <i>spray-can</i>!</h1>
-              </body>
-            </html>
-          }
+          complete { html.stocks.render().body }
         }
       }
     }
